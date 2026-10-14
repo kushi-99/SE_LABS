@@ -26,13 +26,12 @@ courses = {
     },
 }
 
-total_tuition = 0.0
+total_tuition = {"amount": 0.0}
 
 
-def enrollStudent(course_id, student_name, credits_registered=3,
-                  audit_trail=None):
+def enroll_student(course_id, student_name, credits_registered=3,
+                   audit_trail=None):
     """Enroll a student if the requested course has available seats."""
-    global total_tuition
 
     if audit_trail is None:
         audit_trail = []
@@ -52,7 +51,7 @@ def enrollStudent(course_id, student_name, credits_registered=3,
     if course["seats"] == 0:
         course["is_closed"] = True
 
-    total_tuition += course["fee"]
+    total_tuition["amount"] += course["fee"]
 
     audit_trail.append(
         f"Enrolled student {student_name} in course "
@@ -61,7 +60,7 @@ def enrollStudent(course_id, student_name, credits_registered=3,
     return True
 
 
-def dropCourse(course_id):
+def drop_course(course_id):
     """Restore a seat when a valid course enrollment is dropped."""
     course = courses.get(course_id)
 
@@ -73,7 +72,7 @@ def dropCourse(course_id):
     return True
 
 
-def checkCourseStatus(course_id):
+def check_course_status(course_id):
     """Return whether a course exists and is open."""
     course = courses.get(course_id)
 
@@ -83,7 +82,7 @@ def checkCourseStatus(course_id):
     return not course["is_closed"] and course["seats"] > 0
 
 
-def calculateScholarshipTuition(course_id, discount_rate):
+def calculate_scholarship_tuition(course_id, discount_rate):
     """Calculate tuition after a discount percentage from 0 to 100."""
     if course_id not in courses:
         raise ValueError(f"Unknown course ID: {course_id}")
@@ -98,17 +97,17 @@ def calculateScholarshipTuition(course_id, discount_rate):
     return round(base_fee * (1 - discount_rate / 100), 2)
 
 
-def generateStudentHash(roll_no):
+def generate_student_hash(roll_no):
     """Generate a SHA-256 hash of a student roll number."""
     return hashlib.sha256(roll_no.encode("utf-8")).hexdigest()
 
 
-def generateEnrollmentOtp():
+def generate_enrollment_otp():
     """Generate a four-digit security-conscious OTP."""
     return f"{secrets.randbelow(9000) + 1000}"
 
 
-def exportCourseRoster(filename="course_roster.txt"):
+def export_course_roster(filename="course_roster.txt"):
     """Write course details to a roster file."""
     with open(filename, "w", encoding="utf-8") as roster_file:
         for course_id, details in courses.items():
@@ -122,7 +121,7 @@ def exportCourseRoster(filename="course_roster.txt"):
     print(f"Course roster exported to: {os.path.abspath(filename)}")
 
 
-def getOpenCoursesSummary(course_catalog):
+def get_open_courses_summary(course_catalog):
     """Return the number of courses that are open and have seats."""
     return sum(
         1
@@ -135,24 +134,24 @@ def main():
     """Run example course enrollment operations."""
     audit_trail = []
 
-    enrolled = enrollStudent(
+    enrolled = enroll_student(
         "CS101", "Kritika", 4, audit_trail
     )
     print("Enrollment successful:", enrolled)
 
-    dropped = dropCourse("CS101")
+    dropped = drop_course("CS101")
     print("Course dropped:", dropped)
 
-    print("Is CS101 open:", checkCourseStatus("CS101"))
+    print("Is CS101 open:", check_course_status("CS101"))
     print(
         "Scholarship Fee:",
-        calculateScholarshipTuition("CS303", 25),
+        calculate_scholarship_tuition("CS303", 25),
     )
-    print("Student Hash:", generateStudentHash("REG_2026_091"))
-    print("Enrollment OTP:", generateEnrollmentOtp())
+    print("Student Hash:", generate_student_hash("REG_2026_091"))
+    print("Enrollment OTP:", generate_enrollment_otp())
 
-    exportCourseRoster()
-    print("Open courses:", getOpenCoursesSummary(courses))
+    export_course_roster()
+    print("Open courses:", get_open_courses_summary(courses))
     print("Audit trail:", audit_trail)
 
 
