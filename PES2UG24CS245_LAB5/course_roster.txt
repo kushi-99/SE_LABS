@@ -1,0 +1,3 @@
+CS101: Data Structures, Seats: 3, Fee: 500.00, Closed: False
+CS202: Operating Systems, Seats: 0, Fee: 550.00, Closed: True
+CS303: Compiler Design, Seats: 4, Fee: 600.00, Closed: False
